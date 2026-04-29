@@ -48,6 +48,7 @@
             <th>Distancia</th>
             <th>Género</th>
             <th>Tiempo</th>
+            <th>Compartir</th>
           </tr>
         </thead>
         <tbody id="tabla-resultados"></tbody>
@@ -58,6 +59,8 @@
       </p>
     </section>
   </main>
+
+  <div id="toast" class="toast"></div>
 
   <script>
     let participantes = [];
@@ -143,6 +146,12 @@
           <td>${p.distancia.toUpperCase()}</td>
           <td>${p.genero}</td>
           <td>${p.tiempo}</td>
+          <td>
+            <button class="share-btn"
+              onclick="compartir('${p.nombre}', '${p.tiempo}', '${p.distancia}')">
+              Compartir
+            </button>
+          </td>
         `;
 
         tabla.appendChild(fila);
@@ -167,7 +176,47 @@
     generoSelect.addEventListener("change", renderizarTabla);
 
     cargarResultados();
+
+    function compartir(nombre, tiempo, distancia) {
+      const texto = `🏃 ${nombre} ha completado la ${distancia.toUpperCase()} Zolina en ${tiempo}`;
+    
+      const url = window.location.href;
+    
+      // Web Share API (móvil principalmente)
+      if (navigator.share) {
+        navigator.share({
+          title: "Resultados 10K Zolina",
+          text: texto,
+          url: url
+        }).catch(err => {
+          console.error("Error compartiendo:", err);
+        });
+      } 
+      // Fallback escritorio
+      else {
+        const contenido = `${texto} - ${url}`;
+    
+        navigator.clipboard.writeText(contenido)
+          .then(() => {
+            mostrarToast("Resultado copiado al portapapeles");
+          })
+          .catch(() => {
+            alert("No se pudo copiar automáticamente");
+          });
+      }
+    }
+
+    function mostrarToast(mensaje) {
+      const toast = document.getElementById("toast");
+      toast.textContent = mensaje;
+      toast.classList.add("show");
+    
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2000);
+    }
   </script>
 
+  
 </body>
 </html>
