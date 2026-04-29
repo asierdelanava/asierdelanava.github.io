@@ -23,15 +23,29 @@
       </p>
 
       <section class="food-counter">
+        <div class="food-icon">🥫</div>
+      
         <h2>Alimentos recaudados</h2>
-
-        <div class="thermometer">
-          <div id="thermometer-fill" class="thermometer-fill"></div>
-        </div>
-
-        <p class="food-amount">
-          <span id="kg-actuales">0</span> kg de <span id="kg-objetivo">500</span> kg
+      
+        <p class="food-subtitle">
+          Gracias a todas las personas participantes y colaboradoras.
         </p>
+      
+        <div class="food-progress-info">
+          <span><strong id="kg-actuales">0</strong> kg</span>
+          <span id="porcentaje-comida">0%</span>
+        </div>
+      
+        <div class="food-progress">
+          <div id="thermometer-fill" class="food-progress-fill">
+            <div class="food-progress-shine"></div>
+          </div>
+        </div>
+      
+        <div class="food-scale">
+          <span>0 kg</span>
+          <span>Objetivo: <strong id="kg-objetivo">500</strong> kg</span>
+        </div>
       </section>
 
       <a href="resultados.html" class="primary-button">
@@ -43,12 +57,16 @@
   <script>
     const kgActuales = 325;
     const kgObjetivo = 500;
-
+  
     const porcentaje = Math.min((kgActuales / kgObjetivo) * 100, 100);
-
+  
     document.getElementById("kg-actuales").textContent = kgActuales;
     document.getElementById("kg-objetivo").textContent = kgObjetivo;
-    document.getElementById("thermometer-fill").style.width = porcentaje + "%";
+    document.getElementById("porcentaje-comida").textContent = Math.round(porcentaje) + "%";
+  
+    setTimeout(() => {
+      document.getElementById("thermometer-fill").style.width = porcentaje + "%";
+    }, 300);
   </script>
 
 </body>
