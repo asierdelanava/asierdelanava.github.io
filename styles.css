@@ -234,39 +234,146 @@ tbody tr:hover {
 }
 
 .food-counter {
-  margin: 32px auto;
-  padding: 24px;
-  max-width: 420px;
-  background: var(--green-light);
-  border-radius: 22px;
-  border: 1px solid rgba(22, 155, 98, 0.18);
+  position: relative;
+  margin: 36px auto;
+  padding: 28px;
+  max-width: 460px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(22, 155, 98, 0.28), transparent 35%),
+    linear-gradient(135deg, rgba(255,255,255,0.96), rgba(232,247,239,0.96));
+  border: 1px solid rgba(22, 155, 98, 0.22);
+  border-radius: 28px;
+  box-shadow:
+    0 20px 60px rgba(15, 111, 71, 0.16),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+.food-counter::before {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  right: -70px;
+  top: -70px;
+  background: rgba(22, 155, 98, 0.12);
+  border-radius: 50%;
+}
+
+.food-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+  display: grid;
+  place-items: center;
+  background: white;
+  border-radius: 18px;
+  font-size: 30px;
+  box-shadow: 0 12px 28px rgba(15, 111, 71, 0.14);
+  animation: floatIcon 3s ease-in-out infinite;
 }
 
 .food-counter h2 {
-  margin: 0 0 16px;
-  font-size: 22px;
+  position: relative;
+  margin: 0;
+  font-size: 24px;
   color: var(--green-dark);
 }
 
-.thermometer {
-  width: 100%;
-  height: 24px;
-  background: #d7eadf;
-  border-radius: 999px;
-  overflow: hidden;
-  border: 1px solid rgba(15, 111, 71, 0.2);
+.food-subtitle {
+  position: relative;
+  margin: 8px auto 22px;
+  max-width: 340px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
 }
 
-.thermometer-fill {
+.food-progress-info {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 10px;
+  color: var(--green-dark);
+  font-weight: 800;
+}
+
+.food-progress-info strong {
+  font-size: 34px;
+  letter-spacing: -0.04em;
+}
+
+#porcentaje-comida {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--green);
+  color: white;
+  font-size: 14px;
+}
+
+.food-progress {
+  position: relative;
+  height: 28px;
+  overflow: hidden;
+  background: #d9eee3;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 111, 71, 0.18);
+  box-shadow: inset 0 3px 8px rgba(15, 111, 71, 0.12);
+}
+
+.food-progress-fill {
+  position: relative;
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--green), var(--green-dark));
+  overflow: hidden;
   border-radius: 999px;
-  transition: width 0.8s ease;
+  background:
+    linear-gradient(90deg, #41c77d, var(--green), var(--green-dark));
+  box-shadow:
+    0 0 18px rgba(22, 155, 98, 0.55),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+  transition: width 1.4s cubic-bezier(.22,1,.36,1);
 }
 
-.food-amount {
-  margin: 12px 0 0;
-  font-weight: 700;
-  color: var(--green-dark);
+.food-progress-shine {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      120deg,
+      transparent 0%,
+      transparent 30%,
+      rgba(255,255,255,0.55) 45%,
+      transparent 60%,
+      transparent 100%
+    );
+  animation: shineMove 2.2s infinite;
+}
+
+.food-scale {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@keyframes shineMove {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes floatIcon {
+  0%, 100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(3deg);
+  }
 }
