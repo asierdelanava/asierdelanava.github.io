@@ -328,11 +328,25 @@ tbody tr:hover {
   width: 0%;
   overflow: hidden;
   border-radius: 999px;
-  background:
-    linear-gradient(90deg, #41c77d, var(--green), var(--green-dark));
+
+  /* Gradiente tipo termómetro */
+  background: linear-gradient(
+    90deg,
+    #22c55e 0%,     /* verde */
+    #84cc16 20%,
+    #eab308 40%,    /* amarillo */
+    #f97316 70%,    /* naranja */
+    #ef4444 100%    /* rojo */
+  );
+
+  /* Hace que el gradiente se “mueva” visualmente al crecer */
+  background-size: 200% 100%;
+  background-position: left;
+
   box-shadow:
-    0 0 18px rgba(22, 155, 98, 0.55),
+    0 0 18px rgba(239, 68, 68, 0.35),
     inset 0 1px 0 rgba(255,255,255,0.35);
+
   transition: width 1.4s cubic-bezier(.22,1,.36,1);
 }
 
