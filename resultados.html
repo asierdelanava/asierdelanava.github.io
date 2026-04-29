@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resultados | 10K Zolina</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <a href="index.html" class="logo">10K Zolina</a>
+    <span class="header-text">Resultados oficiales</span>
+  </header>
+
+  <main class="container">
+    <section class="results-header">
+      <h1>Resultados</h1>
+      <p>Filtra por distancia y categoría.</p>
+    </section>
+
+    <section class="filters">
+      <div class="filter-group">
+        <label for="distancia">Distancia</label>
+        <select id="distancia">
+          <option value="10k">10K</option>
+          <option value="5k">5K</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="genero">Categoría</label>
+        <select id="genero">
+          <option value="General">General</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Femenino">Femenino</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Posición</th>
+            <th>Dorsal</th>
+            <th>Nombre y apellido</th>
+            <th>Distancia</th>
+            <th>Género</th>
+            <th>Tiempo</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-resultados"></tbody>
+      </table>
+
+      <p id="sin-resultados" class="empty-message">
+        No hay resultados para esta selección.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    let participantes = [];
+
+    const distanciaSelect = document.getElementById("distancia");
+    const generoSelect = document.getElementById("genero");
+    const tabla = document.getElementById("tabla-resultados");
+    const sinResultados = document.getElementById("sin-resultados");
+
+    function normalizarGenero(genero) {
+      const g = genero.trim().toLowerCase();
+
+      if (g === "m" || g === "masculino") return "Masculino";
+      if (g === "f" || g === "femenino") return "Femenino";
+
+      return genero;
+    }
+
+    function parseCSV(texto) {
+      const lineas = texto.trim().split("\n");
+      const cabeceras = lineas[0].split(",").map(h => h.trim());
+
+      return lineas.slice(1).map(linea => {
+        const valores = linea.split(",").map(v => v.trim());
+
+        const obj = {};
+        cabeceras.forEach((cabecera, index) => {
+          obj[cabecera] = valores[index];
+        });
+
+        return {
+          nombre: obj["Nombre y apellido"],
+          distancia: obj["distancia"].toLowerCase(),
+          genero: normalizarGenero(obj["genero"]),
+          tiempo: obj["tiempo"],
+          dorsal: obj["dorsal"]
+        };
+      });
+    }
+
+    function tiempoASegundos(tiempo) {
+      const partes = tiempo.split(":").map(Number);
+
+      if (partes.length === 3) {
+        return partes[0] * 3600 + partes[1] * 60 + partes[2];
+      }
+
+      if (partes.length === 2) {
+        return partes[0] * 60 + partes[1];
+      }
+
+      return Infinity;
+    }
+
+    function renderizarTabla() {
+      const distancia = distanciaSelect.value;
+      const genero = generoSelect.value;
+
+      let filtrados = participantes.filter(p => p.distancia === distancia);
+
+      if (genero !== "General") {
+        filtrados = filtrados.filter(p => p.genero === genero);
+      }
+
+      filtrados.sort((a, b) => tiempoASegundos(a.tiempo) - tiempoASegundos(b.tiempo));
+
+      tabla.innerHTML = "";
+
+      if (filtrados.length === 0) {
+        sinResultados.style.display = "block";
+        return;
+      }
+
+      sinResultados.style.display = "none";
+
+      filtrados.forEach((p, index) => {
+        const fila = document.createElement("tr");
+
+        fila.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${p.dorsal}</td>
+          <td>${p.nombre}</td>
+          <td>${p.distancia.toUpperCase()}</td>
+          <td>${p.genero}</td>
+          <td>${p.tiempo}</td>
+        `;
+
+        tabla.appendChild(fila);
+      });
+    }
+
+    async function cargarResultados() {
+      try {
+        const respuesta = await fetch("resultados.csv");
+        const texto = await respuesta.text();
+
+        participantes = parseCSV(texto);
+        renderizarTabla();
+      } catch (error) {
+        tabla.innerHTML = "";
+        sinResultados.textContent = "No se ha podido cargar el archivo de resultados.";
+        sinResultados.style.display = "block";
+      }
+    }
+
+    distanciaSelect.addEventListener("change", renderizarTabla);
+    generoSelect.addEventListener("change", renderizarTabla);
+
+    cargarResultados();
+  </script>
+
+</body>
+</html>
