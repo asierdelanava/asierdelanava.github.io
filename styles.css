@@ -232,3 +232,41 @@ tbody tr:hover {
     width: 100%;
   }
 }
+
+.food-counter {
+  margin: 32px auto;
+  padding: 24px;
+  max-width: 420px;
+  background: var(--green-light);
+  border-radius: 22px;
+  border: 1px solid rgba(22, 155, 98, 0.18);
+}
+
+.food-counter h2 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  color: var(--green-dark);
+}
+
+.thermometer {
+  width: 100%;
+  height: 24px;
+  background: #d7eadf;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 111, 71, 0.2);
+}
+
+.thermometer-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--green), var(--green-dark));
+  border-radius: 999px;
+  transition: width 0.8s ease;
+}
+
+.food-amount {
+  margin: 12px 0 0;
+  font-weight: 700;
+  color: var(--green-dark);
+}
