@@ -148,7 +148,7 @@
           <td>${p.tiempo}</td>
           <td>
             <button class="share-btn"
-              onclick="compartir('${p.nombre}', '${p.tiempo}', '${p.distancia}')">
+              onclick="compartir('${p.nombre}', '${p.tiempo}', '${p.distancia}', ${index + 1})">
               Compartir
             </button>
           </td>
@@ -177,32 +177,31 @@
 
     cargarResultados();
 
-    function compartir(nombre, tiempo, distancia) {
-      const texto = `🏃 ${nombre} ha completado la ${distancia.toUpperCase()} Zolina en ${tiempo}`;
+    function compartir(nombre, tiempo, distancia, posicion) {
+      const distanciaTexto = distancia.toUpperCase();
+    
+      const texto = 
+    `🏃 ¡He terminado la ${distanciaTexto} Zolina!
+    
+    ${nombre}
+    📏 ${distanciaTexto}
+    ⏱️ ${tiempo}
+    🏅 Posición: ${posicion}
+    📍 Badostain
+    📅 24 de mayo`;
     
       const url = window.location.href;
     
-      // Web Share API (móvil principalmente)
       if (navigator.share) {
         navigator.share({
-          title: "Resultados 10K Zolina",
+          title: "10K Zolina",
           text: texto,
           url: url
-        }).catch(err => {
-          console.error("Error compartiendo:", err);
-        });
-      } 
-      // Fallback escritorio
-      else {
-        const contenido = `${texto} - ${url}`;
-    
-        navigator.clipboard.writeText(contenido)
-          .then(() => {
-            mostrarToast("Resultado copiado al portapapeles");
-          })
-          .catch(() => {
-            alert("No se pudo copiar automáticamente");
-          });
+        }).catch(err => console.error(err));
+      } else {
+        navigator.clipboard.writeText(`${texto}\n${url}`)
+          .then(() => mostrarToast("Resultado copiado"))
+          .catch(() => alert("No se pudo copiar"));
       }
     }
 
