@@ -22,11 +22,34 @@
         Consulta los tiempos de los participantes de las pruebas 10K y 5K.
       </p>
 
+      <section class="food-counter">
+        <h2>Alimentos recaudados</h2>
+
+        <div class="thermometer">
+          <div id="thermometer-fill" class="thermometer-fill"></div>
+        </div>
+
+        <p class="food-amount">
+          <span id="kg-actuales">0</span> kg de <span id="kg-objetivo">500</span> kg
+        </p>
+      </section>
+
       <a href="resultados.html" class="primary-button">
         Ver resultados
       </a>
     </section>
   </main>
+
+  <script>
+    const kgActuales = 325;
+    const kgObjetivo = 500;
+
+    const porcentaje = Math.min((kgActuales / kgObjetivo) * 100, 100);
+
+    document.getElementById("kg-actuales").textContent = kgActuales;
+    document.getElementById("kg-objetivo").textContent = kgObjetivo;
+    document.getElementById("thermometer-fill").style.width = porcentaje + "%";
+  </script>
 
 </body>
 </html>
