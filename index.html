@@ -16,13 +16,13 @@
   <link rel="manifest" href="site.webmanifest">
 
   <title>10K Zolina 2026 | Carrera solidaria en Badostain</title>
-  <meta name="description" content="Guía práctica del día de la 10K Zolina: horarios, mapas de servicios, aparcamiento, zona infantil, Kiloreto solidario, recorridos y resultados en Badostain.">
+  <meta name="description" content="Web oficial de la 10K Zolina. Consulta inscripción, carreras Txiki, 5K y 10K, recorridos, resultados y detalles del evento solidario en Badostain (Navarra).">
   <meta name="robots" content="index,follow">
   <meta name="application-name" content="10K Zolina">
 
   <!-- Open Graph (cuando compartes enlace) -->
   <meta property="og:title" content="10K Zolina">
-  <meta property="og:description" content="Horarios, mapas de interés, recorridos, Kiloreto solidario y resultados de la 10K Zolina en Badostain">
+  <meta property="og:description" content="Txiki, 5K, 10K, recorridos, inscripción y reto solidario en Badostain">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://10kzolina.github.io/">
   <meta property="og:image" content="https://10kzolina.github.io/img/logo-zolina.png">
@@ -32,7 +32,7 @@
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="10K Zolina 2026">
-  <meta name="twitter:description" content="Guía del evento 10K Zolina: horarios, mapas de interés, recorridos, resultados y Kiloreto de alimentos.">
+  <meta name="twitter:description" content="Carrera solidaria en Badostain con Txiki, 5K, 10K, recorridos, inscripción, resultados y Kiloreto de alimentos.">
   <meta name="twitter:image" content="https://10kzolina.github.io/img/logo-zolina.png">
 
   <!-- Canonical -->
@@ -126,198 +126,232 @@
   </header>
 
 
-  <main class="event-guide-main">
-    <section class="event-guide-hero" aria-labelledby="event-guide-title">
-      <div class="event-guide-hero-bg event-guide-hero-bg-one"></div>
-      <div class="event-guide-hero-bg event-guide-hero-bg-two"></div>
+  
+<main class="event-day-main">
+  <section class="hero hero-upgraded event-day-hero">
+    <div class="hero-bg-orb orb-one"></div>
+    <div class="hero-bg-orb orb-two"></div>
 
-      <div class="event-guide-hero-card glass-card reveal">
-        <div class="event-guide-hero-head">
-          <p class="eyebrow">Carrera solidaria · Badostain · 24 de mayo</p>
+    <article class="hero-card glass-card reveal event-day-hero-card">
+      <p class="event-meta-line">
+        Carrera solidaria ·
+        <a class="inline-location" href="https://www.google.com/maps/search/?api=1&amp;query=Badostain%2C%20Navarra" target="_blank" rel="noopener">Badostain</a>
+        ·
+        <a class="inline-location" href="10k-zolina.ics" type="text/calendar" aria-label="Añadir la 10K Zolina del 24 de mayo al calendario">24 de mayo</a>
+      </p>
 
-          <div class="event-guide-title-row">
-            <h1 id="event-guide-title">10K Zolina</h1>
-            <span class="soldout-status-button event-guide-soldout" role="status" aria-label="Dorsales agotados">Dorsales agotados</span>
+      <h1>10K Zolina</h1>
+
+      <div class="hero-status-row" aria-label="Estado de las inscripciones">
+        <span class="soldout-status-button event-soldout-badge" role="status" aria-label="Dorsales agotados">Dorsales agotados</span>
+      </div>
+
+      <div class="hero-actions event-day-actions" aria-label="Acciones principales del evento">
+        <a class="primary-button comida-popular-button" href="/contacto">Apuntarse a la comida popular</a>
+        <a class="secondary-button" href="/recorridos">Ver recorridos</a>
+        <a class="secondary-button" href="/resultados">Ver resultados</a>
+      </div>
+    </article>
+  </section>
+
+  <section class="event-guide reveal delay-1" aria-labelledby="event-guide-title">
+    <div class="event-guide-heading">
+      <p class="eyebrow">Información del día</p>
+      <h2 id="event-guide-title">Guía rápida del evento</h2>
+      <p>Consulta horarios, servicios, aparcamiento y zona infantil sin perderte.</p>
+    </div>
+
+    <div class="event-guide-tabs" role="tablist" aria-label="Guía rápida del evento">
+      <button class="event-guide-tab is-active" id="event-guide-tab-plan" type="button" role="tab" aria-selected="true" aria-controls="event-guide-panel-plan" data-event-guide-tab="plan">
+        <strong>Plan del día</strong>
+        <span>Horarios</span>
+      </button>
+      <button class="event-guide-tab" id="event-guide-tab-fronton" type="button" role="tab" aria-selected="false" aria-controls="event-guide-panel-fronton" data-event-guide-tab="fronton" tabindex="-1">
+        <strong>Mapa frontón</strong>
+        <span>Servicios</span>
+      </button>
+      <button class="event-guide-tab" id="event-guide-tab-parking" type="button" role="tab" aria-selected="false" aria-controls="event-guide-panel-parking" data-event-guide-tab="parking" tabindex="-1">
+        <strong>Aparcamiento</strong>
+        <span>Acceso</span>
+      </button>
+      <button class="event-guide-tab" id="event-guide-tab-kids" type="button" role="tab" aria-selected="false" aria-controls="event-guide-panel-kids" data-event-guide-tab="kids" tabindex="-1">
+        <strong>Zona infantil</strong>
+        <span>Hincha­bles</span>
+      </button>
+    </div>
+
+    <div class="event-guide-panels">
+      <article class="event-guide-panel event-guide-panel--active" id="event-guide-panel-plan" role="tabpanel" aria-labelledby="event-guide-tab-plan" data-event-guide-panel="plan">
+        <div class="event-guide-panel-head compact-panel-head">
+          <div>
+            <h3>Plan del día</h3>
+            <p>Agenda compacta para consultar de un vistazo.</p>
           </div>
+          <span class="soft-pill">24 mayo</span>
         </div>
 
-        <section class="day-schedule" aria-labelledby="day-schedule-title">
-          <div class="section-title-row day-schedule-head">
-            <div>
-              <p class="eyebrow">Guía rápida</p>
-              <h2 id="day-schedule-title">Horarios del día</h2>
-              <p>Ten a mano los momentos clave del evento.</p>
-            </div>
-          </div>
-
-          <ol class="schedule-timeline" aria-label="Horarios importantes de la 10K Zolina">
-            <li class="schedule-item is-highlighted">
-              <time datetime="2026-05-24T08:30">8:30 – 10:30</time>
+        <div class="compact-agenda" aria-label="Horarios del día de la carrera">
+          <section class="agenda-group" aria-labelledby="agenda-llegada">
+            <h4 id="agenda-llegada">Llegada</h4>
+            <div class="agenda-row agenda-row--important">
+              <time>8:30 – 10:30</time>
               <span>Entrega de dorsales y consigna</span>
-            </li>
-            <li class="schedule-item is-highlighted">
-              <time datetime="2026-05-24T10:00">10:00</time>
+            </div>
+          </section>
+
+          <section class="agenda-group" aria-labelledby="agenda-salidas">
+            <h4 id="agenda-salidas">Salidas</h4>
+            <div class="agenda-row agenda-row--start">
+              <time>10:00</time>
               <span>Salida carrera txiki</span>
-            </li>
-            <li class="schedule-item is-highlighted">
-              <time datetime="2026-05-24T11:00">11:00</time>
+            </div>
+            <div class="agenda-row agenda-row--start">
+              <time>11:00</time>
               <span>Salida carrera 5K y 10K</span>
-            </li>
-            <li class="schedule-item is-highlighted">
-              <time datetime="2026-05-24T11:15">11:15</time>
+            </div>
+            <div class="agenda-row agenda-row--start">
+              <time>11:15</time>
               <span>Salida 5K marcha</span>
-            </li>
-            <li class="schedule-item">
-              <time datetime="2026-05-24T11:00">11:00 – 13:00</time>
-              <span>Zona infantil txikis mientras corren los padres</span>
-            </li>
-            <li class="schedule-item">
-              <time datetime="2026-05-24T12:00">12:00</time>
+            </div>
+            <div class="agenda-row agenda-row--kids">
+              <time>11:00 – 13:00</time>
+              <span>Zona infantil txikis</span>
+            </div>
+          </section>
+
+          <section class="agenda-group" aria-labelledby="agenda-despues">
+            <h4 id="agenda-despues">Después de correr</h4>
+            <div class="agenda-row">
+              <time>12:00</time>
               <span>Lunch</span>
-            </li>
-            <li class="schedule-item">
-              <time datetime="2026-05-24T13:00">13:00</time>
+            </div>
+            <div class="agenda-row">
+              <time>13:00</time>
               <span>Entrega de premios + sorteos</span>
-            </li>
-            <li class="schedule-item">
-              <time datetime="2026-05-24T13:30">13:30 – 15:00</time>
+            </div>
+            <div class="agenda-row">
+              <time>13:30 – 15:00</time>
               <span>Txaranga</span>
-            </li>
-            <li class="schedule-item">
-              <time datetime="2026-05-24T15:00">15:00</time>
+            </div>
+            <div class="agenda-row agenda-row--important">
+              <time>15:00</time>
               <span>Comida popular</span>
-            </li>
-            <li class="schedule-item">
-              <time datetime="2026-05-24T16:30">16:30 en adelante</time>
-              <span>Sobremesa con bingo musical y más sorteos</span>
-            </li>
-          </ol>
-        </section>
-
-        <div class="event-guide-actions" aria-label="Acciones principales del día del evento">
-          <a class="primary-button comida-popular-button" href="/contacto">Apuntarse a la comida popular</a>
-          <a class="secondary-button" href="/recorridos">Ver recorridos</a>
-          <a class="secondary-button" href="/resultados">Ver resultados</a>
+            </div>
+            <div class="agenda-row">
+              <time>16:30 →</time>
+              <span>Sobremesa con bingo musical y sorteos</span>
+            </div>
+          </section>
         </div>
-      </div>
-    </section>
+      </article>
 
-    <section class="event-guide-section event-maps-section reveal delay-1" aria-labelledby="event-maps-title" data-event-guide-maps>
-      <div class="event-guide-section-head">
-        <p class="eyebrow">Orientación rápida</p>
-        <h2 id="event-maps-title">Mapas de interés</h2>
-        <p>Consulta rápidamente dónde recoger el dorsal, dónde aparcar y cómo llegar a la zona infantil.</p>
-      </div>
-
-      <div class="event-map-tabs" role="tablist" aria-label="Seleccionar mapa de interés">
-        <button class="event-map-tab is-active" type="button" role="tab" id="event-map-tab-servicios" aria-selected="true" aria-controls="event-map-panel" tabindex="0" data-event-guide-map-tab="servicios">
-          <strong>Servicios</strong>
-          <span>Frontón</span>
-        </button>
-        <button class="event-map-tab" type="button" role="tab" id="event-map-tab-aparcamiento" aria-selected="false" aria-controls="event-map-panel" tabindex="-1" data-event-guide-map-tab="aparcamiento">
-          <strong>Aparcamiento</strong>
-          <span>Acceso</span>
-        </button>
-        <button class="event-map-tab" type="button" role="tab" id="event-map-tab-infantil" aria-selected="false" aria-controls="event-map-panel" tabindex="-1" data-event-guide-map-tab="infantil">
-          <strong>Zona infantil</strong>
-          <span>Hinchables</span>
-        </button>
-      </div>
-
-      <article class="event-map-card" id="event-map-panel" role="tabpanel" aria-labelledby="event-map-tab-servicios">
-        <div class="event-map-copy">
-          <span class="soft-pill" id="event-map-kicker">Mapa activo</span>
-          <h3 id="event-map-title">Servicios en la plaza del frontón</h3>
-          <p id="event-map-description">Ubica rápidamente la recogida de dorsales, baños, ambulancia, meta, fuente, podio y otros puntos clave.</p>
-          <a class="secondary-button event-map-open" id="event-map-open" href="img/mapa_fronton.png" target="_blank" rel="noopener">Abrir mapa en grande</a>
+      <article class="event-guide-panel" id="event-guide-panel-fronton" role="tabpanel" aria-labelledby="event-guide-tab-fronton" data-event-guide-panel="fronton" hidden>
+        <div class="event-guide-panel-head">
+          <div>
+            <h3>Servicios en la plaza del frontón</h3>
+            <p>Recogida de dorsales, baños, ambulancia, meta, fuente, podio y servicios principales.</p>
+          </div>
+          <a class="secondary-button map-open-link" href="assets/img/mapa-servicios-fronton.png" target="_blank" rel="noopener">Abrir mapa en grande</a>
         </div>
-
-        <figure class="event-map-figure">
-          <img id="event-map-image" src="img/mapa_fronton.png" alt="Mapa de servicios de la plaza del frontón con recogida de dorsales, baños, ambulancia, meta, fuente y podio" loading="lazy" decoding="async" />
+        <figure class="event-guide-map-figure">
+          <img src="assets/img/mapa-servicios-fronton.png" alt="Mapa de servicios de la plaza del frontón con recogida de dorsales, baños, ambulancia, meta, fuente y podio" loading="lazy" decoding="async" />
         </figure>
       </article>
-    </section>
 
-    <section class="event-guide-section before-arriving-section reveal delay-2" id="antes-de-venir" aria-labelledby="before-arriving-title">
-      <div class="event-guide-section-head compact-head">
-        <p class="eyebrow">Recordatorios</p>
-        <h2 id="before-arriving-title">Antes de venir</h2>
-      </div>
-
-      <div class="reminder-grid">
-        <article class="reminder-card">
-          <span aria-hidden="true">🥫</span>
-          <p>Trae alimentos no perecederos para el Kiloreto solidario.</p>
-        </article>
-        <article class="reminder-card">
-          <span aria-hidden="true">🎒</span>
-          <p>Llega con tiempo para recoger el dorsal y dejar tus cosas en consigna.</p>
-        </article>
-        <article class="reminder-card">
-          <span aria-hidden="true">🅿️</span>
-          <p>Consulta el mapa de aparcamiento antes de salir.</p>
-        </article>
-        <article class="reminder-card">
-          <span aria-hidden="true">🎈</span>
-          <p>Si vienes con peques, revisa cómo llegar a la zona infantil.</p>
-        </article>
-        <article class="reminder-card">
-          <span aria-hidden="true">🎺</span>
-          <p>La comida popular y la fiesta continúan después de la carrera.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="event-guide-secondary-grid reveal delay-3" aria-label="Información secundaria del evento">
-      <article class="impact-card guide-kiloreto-card" id="impacto">
-        <div class="compact-card-top">
-          <div class="impact-icon" aria-hidden="true">🥫</div>
+      <article class="event-guide-panel" id="event-guide-panel-parking" role="tabpanel" aria-labelledby="event-guide-tab-parking" data-event-guide-panel="parking" hidden>
+        <div class="event-guide-panel-head">
           <div>
-            <p class="eyebrow">Kiloreto solidario</p>
-            <h2>1000 kg de alimentos</h2>
+            <h3>Aparcamiento y acceso a Badostain</h3>
+            <p>Consulta dónde dejar el coche y cómo llegar caminando hasta la zona del evento.</p>
           </div>
+          <a class="secondary-button map-open-link" href="assets/img/mapa-aparcamiento-badostain.png" target="_blank" rel="noopener">Abrir mapa en grande</a>
         </div>
-
-        <p class="food-subtitle">Cada participante aporta al menos 1 kg de comida no perecedera. También puedes colaborar aunque vengas solo a animar.</p>
-
-        <div class="food-progress-info">
-          <span><strong id="kg-actuales">0</strong> kg</span>
-          <span id="porcentaje-comida">0%</span>
-        </div>
-
-        <div class="food-progress" aria-label="Progreso de alimentos recaudados">
-          <div id="thermometer-fill" class="food-progress-fill">
-            <div class="food-progress-shine"></div>
-          </div>
-        </div>
-
-        <div class="food-scale">
-          <span>0 kg</span>
-          <span>Objetivo: <strong id="kg-objetivo">1000</strong> kg</span>
-        </div>
-
-        <div class="impact-message" id="impact-message"></div>
-
-        <a href="/kiloreto" class="primary-button kiloreto-button">Ver Kiloreto</a>
+        <figure class="event-guide-map-figure">
+          <img src="assets/img/mapa-aparcamiento-badostain.png" alt="Mapa de aparcamiento y acceso caminando a Badostain" loading="lazy" decoding="async" />
+        </figure>
       </article>
 
-      <article class="challenge-card guide-challenge-card" id="reto-strava">
-        <div class="challenge-card-top">
-          <div class="challenge-icon" aria-hidden="true">⛰️</div>
-          <span class="challenge-tag">Contenido secundario</span>
+      <article class="event-guide-panel" id="event-guide-panel-kids" role="tabpanel" aria-labelledby="event-guide-tab-kids" data-event-guide-panel="kids" hidden>
+        <div class="event-guide-panel-head">
+          <div>
+            <h3>Zona infantil con hinchables</h3>
+            <p>Camino desde el frontón hasta la zona infantil para los más pequeños.</p>
+          </div>
+          <a class="secondary-button map-open-link" href="assets/img/mapa-zona-infantil.png" target="_blank" rel="noopener">Abrir mapa en grande</a>
         </div>
-        <p class="eyebrow">Reto oficial</p>
-        <h2>Zolina KOM Challenge</h2>
-        <p class="challenge-subtitle">Consulta el segmento oficial y el reto en Strava.</p>
-        <div class="challenge-stats" aria-label="Datos del reto Segmento Zolina">
-          <div><strong>10,22 km</strong><span>Distancia</span></div>
-          <div><strong>267 m</strong><span>D+</span></div>
-          <div><strong>22 mayo</strong><span>Fin</span></div>
-        </div>
-        <a href="/challenge" class="secondary-button challenge-button">Ver Challenge</a>
+        <figure class="event-guide-map-figure">
+          <img src="assets/img/mapa-zona-infantil.png" alt="Mapa para llegar desde el frontón hasta la zona infantil con hinchables" loading="lazy" decoding="async" />
+        </figure>
       </article>
-    </section>
-  </main>
+    </div>
+  </section>
+
+  <section class="event-reminders reveal delay-2" aria-labelledby="event-reminders-title">
+    <div class="section-title-row compact-section-title">
+      <div>
+        <p class="eyebrow">Antes de venir</p>
+        <h2 id="event-reminders-title">Recordatorios rápidos</h2>
+      </div>
+    </div>
+
+    <div class="event-reminders-grid">
+      <p>Trae alimentos no perecederos para el Kiloreto solidario.</p>
+      <p>Llega con tiempo para recoger el dorsal.</p>
+      <p>Consulta aparcamiento antes de salir.</p>
+      <p>Si vienes con peques, revisa la zona infantil.</p>
+    </div>
+  </section>
+
+  <section class="event-secondary-grid reveal delay-3" aria-label="Información secundaria del evento">
+    <aside class="impact-card kiloreto-card event-secondary-card" id="impacto">
+      <div class="event-secondary-card-head">
+        <div>
+          <p class="eyebrow">Kiloreto solidario</p>
+          <h2>1000 kg de alimentos</h2>
+        </div>
+        <div class="impact-icon" aria-hidden="true">🥫</div>
+      </div>
+
+      <p class="food-subtitle">Trae alimentos no perecederos y ayúdanos a llenar el marcador solidario.</p>
+
+      <div class="food-progress-info compact-food-progress-info">
+        <span><strong id="kg-actuales">0</strong> kg</span>
+        <span id="porcentaje-comida">0%</span>
+      </div>
+
+      <div class="food-progress" aria-label="Progreso de alimentos recaudados">
+        <div id="thermometer-fill" class="food-progress-fill">
+          <div class="food-progress-shine"></div>
+        </div>
+      </div>
+
+      <div class="food-scale">
+        <span>0 kg</span>
+        <span>Objetivo: <strong id="kg-objetivo">1000</strong> kg</span>
+      </div>
+
+      <div class="impact-message" id="impact-message"></div>
+      <a href="/kiloreto" class="secondary-button">Más información</a>
+    </aside>
+
+    <aside class="challenge-card event-secondary-card" id="reto-strava">
+      <div class="challenge-card-top">
+        <div>
+          <p class="eyebrow">Reto oficial</p>
+          <h2>Zolina KOM Challenge</h2>
+        </div>
+        <span class="challenge-tag">Strava</span>
+      </div>
+      <p class="challenge-subtitle">Recorre la 10K Zolina, súbela a Strava y compite por el mejor tiempo en el segmento oficial.</p>
+      <div class="challenge-stats" aria-label="Datos del reto Segmento Zolina">
+        <div><strong>10,22 km</strong><span>Distancia</span></div>
+        <div><strong>267 m</strong><span>D+</span></div>
+        <div><strong>22 mayo</strong><span>Fin</span></div>
+      </div>
+      <a href="/challenge" class="secondary-button">Más información</a>
+    </aside>
+  </section>
+</main>
 
   <footer class="site-footer" data-site-footer></footer>
 
