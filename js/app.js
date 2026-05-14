@@ -322,6 +322,33 @@
     }
   };
 
+  const EVENT_GUIDE_MAPS = {
+    servicios: {
+      tabLabel: "Servicios",
+      panelLabelId: "event-map-tab-servicios",
+      title: "Servicios en la plaza del frontón",
+      description: "Ubica rápidamente la recogida de dorsales, baños, ambulancia, meta, fuente, podio y otros puntos clave.",
+      image: "img/mapa_fronton.png",
+      alt: "Mapa de servicios de la plaza del frontón con recogida de dorsales, baños, ambulancia, meta, fuente y podio"
+    },
+    aparcamiento: {
+      tabLabel: "Aparcamiento",
+      panelLabelId: "event-map-tab-aparcamiento",
+      title: "Aparcamiento y acceso a Badostain",
+      description: "Consulta dónde dejar el coche y cómo llegar caminando hasta la zona del evento.",
+      image: "img/mapa_parking.png",
+      alt: "Mapa de aparcamiento y acceso caminando a Badostain"
+    },
+    infantil: {
+      tabLabel: "Zona infantil",
+      panelLabelId: "event-map-tab-infantil",
+      title: "Zona infantil con hinchables",
+      description: "Camino desde el frontón hasta la zona infantil para los más pequeños.",
+      image: "img/mapa_zona_infantil.png",
+      alt: "Mapa para llegar desde el frontón hasta la zona infantil con hinchables"
+    }
+  };
+
   function onReady(callback) {
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", callback);
@@ -393,8 +420,8 @@
       return {
         phase: "race",
         status,
-        ctaLabel: "Info evento",
-        ctaUrl: "/#info-evento",
+        ctaLabel: "Recorridos",
+        ctaUrl: EVENT_TOPBAR.routesUrl,
         ctaExternal: false
       };
     }
@@ -958,6 +985,72 @@
     loadResults();
   }
 
+
+  function initEventGuideMaps() {
+    const mapsRoot = document.querySelector("[data-event-guide-maps]");
+    if (!mapsRoot) return;
+
+    const elements = {
+      tabs: Array.from(mapsRoot.querySelectorAll("[data-event-guide-map-tab]")),
+      panel: document.getElementById("event-map-panel"),
+      title: document.getElementById("event-map-title"),
+      description: document.getElementById("event-map-description"),
+      image: document.getElementById("event-map-image"),
+      openLink: document.getElementById("event-map-open")
+    };
+
+    if (!elements.tabs.length || !elements.panel || !elements.title || !elements.description || !elements.image || !elements.openLink) return;
+
+    function getEventGuideMap(key) {
+      return EVENT_GUIDE_MAPS[key] ? key : "servicios";
+    }
+
+    function setActiveEventGuideMap(key) {
+      const selectedKey = getEventGuideMap(key);
+      const selectedMap = EVENT_GUIDE_MAPS[selectedKey];
+
+      elements.tabs.forEach((tab) => {
+        const isActive = tab.dataset.eventGuideMapTab === selectedKey;
+        tab.classList.toggle("is-active", isActive);
+        tab.setAttribute("aria-selected", String(isActive));
+        tab.setAttribute("tabindex", isActive ? "0" : "-1");
+      });
+
+      elements.panel.setAttribute("aria-labelledby", selectedMap.panelLabelId);
+      elements.title.textContent = selectedMap.title;
+      elements.description.textContent = selectedMap.description;
+      elements.image.src = selectedMap.image;
+      elements.image.alt = selectedMap.alt;
+      elements.openLink.href = selectedMap.image;
+      elements.openLink.setAttribute("aria-label", `Abrir mapa en grande: ${selectedMap.title}`);
+      mapsRoot.dataset.activeMap = selectedKey;
+    }
+
+    elements.tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => {
+        setActiveEventGuideMap(tab.dataset.eventGuideMapTab);
+      });
+
+      tab.addEventListener("keydown", (event) => {
+        const lastIndex = elements.tabs.length - 1;
+        let nextIndex = index;
+
+        if (event.key === "ArrowRight") nextIndex = index === lastIndex ? 0 : index + 1;
+        else if (event.key === "ArrowLeft") nextIndex = index === 0 ? lastIndex : index - 1;
+        else if (event.key === "Home") nextIndex = 0;
+        else if (event.key === "End") nextIndex = lastIndex;
+        else return;
+
+        event.preventDefault();
+        const nextTab = elements.tabs[nextIndex];
+        nextTab.focus();
+        setActiveEventGuideMap(nextTab.dataset.eventGuideMapTab);
+      });
+    });
+
+    setActiveEventGuideMap("servicios");
+  }
+
   function initRacePage() {
     const racePage = document.querySelector("[data-race-page]");
     if (!racePage) return;
@@ -1270,6 +1363,7 @@
     initFoodProgress();
     initPartners();
     initResultsTable();
+    initEventGuideMaps();
     initRacePage();
   });
 })();
