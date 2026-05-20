@@ -864,6 +864,7 @@ function renderReservationItem(reservation) {
       <span class="reservation-person">${escapeHTML(reservation.userName || "Socio")}</span>
       <div class="reservation-details">
         <span>${formatDate(reservation.fechaInicio)} - ${formatDate(reservation.fechaFin)}</span>
+        <span>${getQuantityLabel(reservation)}</span>
         <span class="badge ${getReservationBadgeClass(reservation.estado)}">${escapeHTML(formatReservationStatus(reservation.estado))}</span>
       </div>
     </li>
@@ -901,6 +902,21 @@ function renderReservationForm(material) {
             required
           />
         </div>
+      </div>
+
+      <div class="form-row">
+        <label for="cantidad-${escapeHTML(material.id)}">Cantidad de unidades</label>
+        <input
+          id="cantidad-${escapeHTML(material.id)}"
+          name="cantidadSolicitada"
+          class="input"
+          type="number"
+          min="1"
+          max="${Number(material.availableUnits || 1)}"
+          value="1"
+          required
+        />
+        <p class="input-hint">Puedes solicitar varias unidades del mismo material en una única reserva. Máximo actual: ${Number(material.availableUnits || 0)}.</p>
       </div>
 
       <div class="form-row">
@@ -973,10 +989,11 @@ async function createReservation(form) {
     const formData = new FormData(form);
     const fechaInicioValue = String(formData.get("fechaInicio") || "");
     const fechaFinValue = String(formData.get("fechaFin") || "");
+    const cantidadSolicitada = Number(formData.get("cantidadSolicitada") || 1);
     const comentarioUsuario = String(formData.get("comentarioUsuario") || "").trim();
     const normasAceptadas = formData.get("normasAceptadas") === "on";
 
-    validateReservationInput(fechaInicioValue, fechaFinValue, normasAceptadas);
+    validateReservationInput(fechaInicioValue, fechaFinValue, normasAceptadas, cantidadSolicitada, Number(material.availableUnits || 0));
 
     const fechaInicio = dateInputToTimestamp(fechaInicioValue, false);
     const fechaFin = dateInputToTimestamp(fechaFinValue, true);
@@ -992,6 +1009,10 @@ async function createReservation(form) {
 
       unidadId: null,
       unidadCodigo: null,
+      unidadIds: [],
+      unidadCodigos: [],
+      cantidadSolicitada,
+      cantidadAprobada: null,
 
       fechaInicio,
       fechaFin,
@@ -1036,7 +1057,7 @@ async function createReservation(form) {
   }
 }
 
-function validateReservationInput(fechaInicioValue, fechaFinValue, normasAceptadas) {
+function validateReservationInput(fechaInicioValue, fechaFinValue, normasAceptadas, cantidadSolicitada, availableUnits) {
   if (!fechaInicioValue || !fechaFinValue) {
     throw new Error("Selecciona fecha de inicio y fecha de fin.");
   }
@@ -1051,6 +1072,14 @@ function validateReservationInput(fechaInicioValue, fechaFinValue, normasAceptad
 
   if (fechaFin < fechaInicio) {
     throw new Error("La fecha de fin no puede ser anterior a la fecha de inicio.");
+  }
+
+  if (!Number.isInteger(cantidadSolicitada) || cantidadSolicitada < 1) {
+    throw new Error("Indica una cantidad válida de unidades.");
+  }
+
+  if (availableUnits > 0 && cantidadSolicitada > availableUnits) {
+    throw new Error(`Solo hay ${availableUnits} ${availableUnits === 1 ? "unidad disponible" : "unidades disponibles"} ahora mismo.`);
   }
 
   if (!normasAceptadas) {
@@ -1076,6 +1105,16 @@ function getFilteredMaterials() {
 
     return searchable.includes(term);
   });
+}
+
+function getRequestedQuantity(reservation) {
+  const quantity = Number(reservation?.cantidadSolicitada || 1);
+  return Number.isInteger(quantity) && quantity > 0 ? quantity : 1;
+}
+
+function getQuantityLabel(reservation) {
+  const quantity = getRequestedQuantity(reservation);
+  return `${quantity} ${quantity === 1 ? "unidad" : "unidades"}`;
 }
 
 function loadMaterialImage(material) {

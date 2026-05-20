@@ -565,8 +565,13 @@ function renderReservationCard(reservation) {
 
         <div class="info-grid">
           <div class="info-item">
-            <strong>Unidad asignada</strong>
-            <p>${reservation.unidadCodigo ? escapeHTML(reservation.unidadCodigo) : "Sin unidad asignada todavía"}</p>
+            <strong>Cantidad solicitada</strong>
+            <p>${getRequestedQuantity(reservation)} ${getRequestedQuantity(reservation) === 1 ? "unidad" : "unidades"}</p>
+          </div>
+
+          <div class="info-item">
+            <strong>Unidades asignadas</strong>
+            <p>${renderAssignedUnits(reservation)}</p>
           </div>
 
           <div class="info-item">
@@ -915,6 +920,32 @@ async function confirmReturn(form) {
 /* =========================================================
    Utilidades
    ========================================================= */
+
+function getRequestedQuantity(reservation) {
+  const quantity = Number(reservation?.cantidadSolicitada || reservation?.cantidadAprobada || 1);
+  return Number.isInteger(quantity) && quantity > 0 ? quantity : 1;
+}
+
+function getAssignedUnitCodes(reservation) {
+  if (Array.isArray(reservation?.unidadCodigos) && reservation.unidadCodigos.length) {
+    return reservation.unidadCodigos.filter(Boolean).map(String);
+  }
+
+  if (reservation?.unidadCodigo) {
+    return String(reservation.unidadCodigo)
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function renderAssignedUnits(reservation) {
+  const codes = getAssignedUnitCodes(reservation);
+  if (!codes.length) return "Sin unidad asignada todavía";
+  return codes.join(", ");
+}
 
 function getReservationSummary() {
   const reservations = state.reservations || [];

@@ -948,3 +948,58 @@ a {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+.unit-picker {
+  display: grid;
+  gap: 8px;
+  max-height: 260px;
+  overflow: auto;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--gray-50);
+}
+
+.unit-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.unit-option input {
+  margin-top: 3px;
+  accent-color: var(--teal-700);
+}
+
+.unit-option span {
+  display: grid;
+  gap: 2px;
+}
+
+.unit-option small {
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.assigned-units {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.unit-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: var(--teal-50);
+  color: var(--teal-800);
+  border: 1px solid var(--teal-100);
+  font-size: 0.82rem;
+  font-weight: 800;
+}

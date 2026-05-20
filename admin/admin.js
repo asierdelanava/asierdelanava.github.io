@@ -1138,7 +1138,9 @@ function renderFilteredReservations() {
           reservation.materialName,
           reservation.comentarioUsuario,
           reservation.notasAdmin,
-          reservation.unidadCodigo
+          reservation.unidadCodigo,
+          Array.isArray(reservation.unidadCodigos) ? reservation.unidadCodigos.join(" ") : "",
+          getRequestedQuantity(reservation)
         ].join(" "));
 
         if (!haystack.includes(search)) return false;
@@ -1223,8 +1225,13 @@ function renderReservationCard(reservation) {
         </div>
 
         <div class="detail-item">
-          <span class="detail-label">Unidad asignada</span>
-          <span class="detail-value">${escapeHtml(reservation.unidadCodigo || "Sin asignar")}</span>
+          <span class="detail-label">Cantidad solicitada</span>
+          <span class="detail-value">${getRequestedQuantity(reservation)} ${getRequestedQuantity(reservation) === 1 ? "unidad" : "unidades"}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Unidades asignadas</span>
+          <span class="detail-value">${renderAssignedUnits(reservation)}</span>
         </div>
 
         <div class="detail-item">
@@ -1311,6 +1318,7 @@ async function updateReservationStatus(reservationId, nextStatus, extraPayload =
 }
 
 function openApproveModal(reservation) {
+  const requestedQuantity = getRequestedQuantity(reservation);
   const availableUnits = units.filter((unit) =>
     unit.materialId === reservation.materialId &&
     unit.activo !== false &&
@@ -1320,59 +1328,114 @@ function openApproveModal(reservation) {
   const modal = createModal(`
     <form id="approve-form" class="form-stack">
       <div class="info-box">
-        Puedes aprobar sin asignar unidad todavía. Si seleccionas una unidad, se guardará en la reserva, pero no se cambiará automáticamente el estado de la unidad.
+        El socio ha solicitado <strong>${requestedQuantity} ${requestedQuantity === 1 ? "unidad" : "unidades"}</strong>.
+        Para aprobar la solicitud, selecciona exactamente esa cantidad de unidades físicas disponibles.
+        No se cambia automáticamente el estado de las unidades.
       </div>
 
       <div class="field">
-        <label for="approve-unit">Unidad disponible, opcional</label>
-        <select id="approve-unit" class="select">
-          <option value="">Sin asignar unidad</option>
-          ${availableUnits.map((unit) => `
-            <option value="${escapeAttr(unit.id)}">${escapeHtml(unit.codigoInterno || unit.id)}</option>
-          `).join("")}
-        </select>
-        ${availableUnits.length ? "" : `<span class="help">No hay unidades disponibles para este material.</span>`}
+        <label>Unidades disponibles</label>
+        ${availableUnits.length ? `
+          <div class="unit-picker" data-unit-picker>
+            ${availableUnits.map((unit) => `
+              <label class="unit-option">
+                <input
+                  type="checkbox"
+                  value="${escapeAttr(unit.id)}"
+                  data-unit-checkbox
+                />
+                <span>
+                  <strong>${escapeHtml(unit.codigoInterno || unit.id)}</strong>
+                  ${unit.notasInternas ? `<small>${escapeHtml(unit.notasInternas)}</small>` : ""}
+                </span>
+              </label>
+            `).join("")}
+          </div>
+          <span id="approve-selection-help" class="help">Seleccionadas 0 de ${requestedQuantity}.</span>
+        ` : `<span class="help">No hay unidades disponibles para este material.</span>`}
       </div>
 
+      <p id="approve-error" class="error-box hidden" role="alert"></p>
+
       <div class="btn-row">
-        <button class="btn btn-primary" type="submit">Aprobar reserva</button>
+        <button class="btn btn-primary" type="submit" ${availableUnits.length < requestedQuantity ? "disabled" : ""}>Aprobar reserva</button>
         <button class="btn btn-secondary" data-close-modal type="button">Cancelar</button>
       </div>
     </form>
   `, `Aprobar reserva · ${reservation.materialName || "Material"}`);
 
+  const checkboxes = Array.from(modal.querySelectorAll("[data-unit-checkbox]"));
+  const help = modal.querySelector("#approve-selection-help");
+  const submit = modal.querySelector("#approve-form button[type='submit']");
+
+  const syncSelection = () => {
+    const selectedCount = checkboxes.filter((checkbox) => checkbox.checked).length;
+    if (help) help.textContent = `Seleccionadas ${selectedCount} de ${requestedQuantity}.`;
+
+    checkboxes.forEach((checkbox) => {
+      checkbox.disabled = !checkbox.checked && selectedCount >= requestedQuantity;
+    });
+
+    if (submit) {
+      submit.disabled = availableUnits.length < requestedQuantity || selectedCount !== requestedQuantity;
+    }
+  };
+
+  checkboxes.forEach((checkbox) => checkbox.addEventListener("change", syncSelection));
+  syncSelection();
+
   modal.querySelector("#approve-form").addEventListener("submit", async (event) => {
     event.preventDefault();
-    const unitId = modal.querySelector("#approve-unit").value || null;
-    await approveReservation(reservation, unitId);
+    const selectedUnitIds = checkboxes
+      .filter((checkbox) => checkbox.checked)
+      .map((checkbox) => checkbox.value);
+
+    const errorBox = modal.querySelector("#approve-error");
+    if (selectedUnitIds.length !== requestedQuantity) {
+      showInlineError(errorBox, `Selecciona exactamente ${requestedQuantity} ${requestedQuantity === 1 ? "unidad" : "unidades"}.`);
+      return;
+    }
+
+    await approveReservation(reservation, selectedUnitIds);
     closeModal(modal);
   });
 }
 
-async function approveReservation(reservation, unitId = null) {
+async function approveReservation(reservation, unitIds = []) {
   try {
+    const requestedQuantity = getRequestedQuantity(reservation);
+    const selectedUnits = unitIds
+      .map((unitId) => units.find((unit) => unit.id === unitId))
+      .filter(Boolean);
+
+    if (selectedUnits.length !== requestedQuantity) {
+      throw new Error(`Selecciona exactamente ${requestedQuantity} ${requestedQuantity === 1 ? "unidad" : "unidades"} para aprobar la reserva.`);
+    }
+
+    const unidadIds = selectedUnits.map((unit) => unit.id);
+    const unidadCodigos = selectedUnits.map((unit) => unit.codigoInterno || unit.id);
+
     const payload = {
       estado: "aprobada",
+      cantidadSolicitada: requestedQuantity,
+      cantidadAprobada: requestedQuantity,
+      unidadIds,
+      unidadCodigos,
+      // Campos legacy para compatibilidad con vistas antiguas.
+      unidadId: unidadIds[0] || null,
+      unidadCodigo: unidadCodigos.join(", ") || null,
       aprobadaPorUid: currentUser.uid,
       aprobadaPorNombre: currentAdminProfile?.nombre || currentUser.email || "Admin",
       aprobadaEn: serverTimestamp(),
       actualizadaEn: serverTimestamp()
     };
 
-    if (unitId) {
-      const selectedUnit = units.find((unit) => unit.id === unitId);
-      if (selectedUnit) {
-        payload.unidadId = selectedUnit.id;
-        payload.unidadCodigo = selectedUnit.codigoInterno || selectedUnit.id;
-      }
-    }
-
     await updateDoc(doc(db, "reservas", reservation.id), payload);
-    showToast("Reserva aprobada.", "success");
+    showToast("Reserva aprobada con unidades asignadas.", "success");
     await loadReservations();
   } catch (error) {
     console.error(error);
-    showToast("Error al aprobar la reserva.", "error");
+    showToast(error.message || "Error al aprobar la reserva.", "error");
   }
 }
 
@@ -1412,9 +1475,13 @@ async function assignUnitToReservation(reservationId, unitId) {
   }
 
   try {
+    const code = unit.codigoInterno || unit.id;
     await updateDoc(doc(db, "reservas", reservationId), {
       unidadId: unit.id,
-      unidadCodigo: unit.codigoInterno || unit.id,
+      unidadCodigo: code,
+      unidadIds: [unit.id],
+      unidadCodigos: [code],
+      cantidadAprobada: 1,
       actualizadaEn: serverTimestamp()
     });
 
@@ -1461,6 +1528,37 @@ async function saveAdminNotes(reservationId, notes) {
     console.error(error);
     showToast("Error al guardar notas.", "error");
   }
+}
+
+function getRequestedQuantity(reservation) {
+  const quantity = Number(reservation?.cantidadSolicitada || reservation?.cantidadAprobada || 1);
+  return Number.isInteger(quantity) && quantity > 0 ? quantity : 1;
+}
+
+function getAssignedUnitCodes(reservation) {
+  if (Array.isArray(reservation?.unidadCodigos) && reservation.unidadCodigos.length) {
+    return reservation.unidadCodigos.filter(Boolean).map(String);
+  }
+
+  if (reservation?.unidadCodigo) {
+    return String(reservation.unidadCodigo)
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function renderAssignedUnits(reservation) {
+  const codes = getAssignedUnitCodes(reservation);
+  if (!codes.length) return "Sin asignar";
+
+  return `
+    <div class="assigned-units">
+      ${codes.map((code) => `<span class="unit-pill">${escapeHtml(code)}</span>`).join("")}
+    </div>
+  `;
 }
 
 function compareReservations(a, b) {
