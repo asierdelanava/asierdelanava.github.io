@@ -618,20 +618,23 @@ async function loadMaterials() {
   renderMaterialCards();
 
   try {
-    const materialsQuery = query(
-      collection(db, "material"),
-      where("activo", "==", true),
-      where("visible", "==", true),
-      orderBy("orden", "asc"),
-      orderBy("nombre", "asc")
-    );
+    // Consulta simple para evitar índices compuestos: filtramos y ordenamos en cliente.
+    // Para un club pequeño es más robusto y suficiente.
+    const snapshot = await getDocs(collection(db, "material"));
 
-    const snapshot = await getDocs(materialsQuery);
+    const visibleMaterials = snapshot.docs
+      .map((materialDoc) => ({ id: materialDoc.id, ...materialDoc.data() }))
+      .filter((material) => material.activo === true && material.visible === true)
+      .sort((a, b) => {
+        const orderA = Number.isFinite(a.orden) ? a.orden : 999999;
+        const orderB = Number.isFinite(b.orden) ? b.orden : 999999;
+        if (orderA !== orderB) return orderA - orderB;
+        return String(a.nombre || "").localeCompare(String(b.nombre || ""), "es", { sensitivity: "base" });
+      });
 
-    const materials = await Promise.all(snapshot.docs.map(async (materialDoc) => {
+    const materials = await Promise.all(visibleMaterials.map(async (baseMaterial) => {
       const material = {
-        id: materialDoc.id,
-        ...materialDoc.data(),
+        ...baseMaterial,
         imageUrl: null,
         availableUnits: 0,
         availabilityError: "",
@@ -679,35 +682,37 @@ async function loadMaterials() {
 }
 
 async function loadMaterialUnitsCount(materialId) {
-  const unitsQuery = query(
-    collection(db, "unidades_material"),
-    where("materialId", "==", materialId),
-    where("activo", "==", true),
-    where("estado", "==", "disponible")
-  );
+  // Consulta por colección completa para evitar índices compuestos.
+  // Si en el futuro hay muchas unidades, cambia esto por una query indexada.
+  const snapshot = await getDocs(collection(db, "unidades_material"));
 
-  const snapshot = await getDocs(unitsQuery);
-  return snapshot.size;
+  return snapshot.docs
+    .map((unitDoc) => unitDoc.data())
+    .filter((unit) => (
+      unit.materialId === materialId
+      && unit.activo === true
+      && unit.estado === "disponible"
+    )).length;
 }
 
 async function loadUpcomingReservations(materialId) {
   const today = getStartOfToday();
-  const reservationsQuery = query(
-    collection(db, "reservas"),
-    where("materialId", "==", materialId),
-    where("estado", "in", ACTIVE_RESERVATION_STATES),
-    where("fechaFin", ">=", Timestamp.fromDate(today)),
-    orderBy("fechaFin", "asc")
-  );
+  const todayMillis = today.getTime();
 
-  const snapshot = await getDocs(reservationsQuery);
+  // Consulta simple para evitar índice compuesto materialId + estado + fechaFin.
+  // La disponibilidad real la revisará administración manualmente.
+  const snapshot = await getDocs(collection(db, "reservas"));
 
   return snapshot.docs
     .map((reservationDoc) => ({
       id: reservationDoc.id,
       ...reservationDoc.data()
     }))
-    // La query filtra por fechaFin. El orden visual pedido se aplica por fechaInicio.
+    .filter((reservation) => (
+      reservation.materialId === materialId
+      && ACTIVE_RESERVATION_STATES.includes(reservation.estado)
+      && getTimestampMillis(reservation.fechaFin) >= todayMillis
+    ))
     .sort((a, b) => getTimestampMillis(a.fechaInicio) - getTimestampMillis(b.fechaInicio));
 }
 
