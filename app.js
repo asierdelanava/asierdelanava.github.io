@@ -23,24 +23,19 @@ import {
   serverTimestamp,
   Timestamp
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-import {
-  getStorage,
-  ref,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-storage.js";
 
 /* =========================================================
    Configuración Firebase
    ========================================================= */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDPgjRW1BBWPqhQalEYNzcQmT5Qs1W4X5I",
-  authDomain: "kpicos.firebaseapp.com",
-  projectId: "kpicos",
-  storageBucket: "kpicos.firebasestorage.app",
-  messagingSenderId: "162214496002",
-  appId: "1:162214496002:web:3b642b037b556a3496a41b",
-  measurementId: "G-T8V2G5QCPB"
+  apiKey: "AIzaSyDvHCmY12MPZXQtxgsD9cRgG8hPlP_16Yk",
+  authDomain: "kpicos-4d57f.firebaseapp.com",
+  projectId: "kpicos-4d57f",
+  storageBucket: "kpicos-4d57f.firebasestorage.app",
+  messagingSenderId: "1017372697555",
+  appId: "1:1017372697555:web:b62f32e31dd40c65518526",
+  measurementId: "G-HP6QXHJBGY"
 };
 
 const VERSION_NORMAS = "2026-05";
@@ -50,7 +45,6 @@ let firebaseApp;
 let analytics;
 let auth;
 let db;
-let storage;
 
 const state = {
   authMode: "login",
@@ -92,7 +86,6 @@ function initFirebase() {
 
   auth = getAuth(firebaseApp);
   db = getFirestore(firebaseApp);
-  storage = getStorage(firebaseApp);
 }
 
 function setupAuthListeners() {

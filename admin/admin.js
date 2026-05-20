@@ -17,27 +17,21 @@ import {
   updateDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-storage.js";
 
 /**
  * Seguridad importante:
  * Esta comprobación de rol en frontend mejora la experiencia, pero NO protege la base de datos.
- * La protección real debe estar en Firestore Rules y Storage Rules usando usuarios/{uid}.rol == "admin".
+ * La protección real debe estar en Firestore Rules usando usuarios/{uid}.rol == "admin".
  */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDPgjRW1BBWPqhQalEYNzcQmT5Qs1W4X5I",
-  authDomain: "kpicos.firebaseapp.com",
-  projectId: "kpicos",
-  storageBucket: "kpicos.firebasestorage.app",
-  messagingSenderId: "162214496002",
-  appId: "1:162214496002:web:3b642b037b556a3496a41b",
-  measurementId: "G-T8V2G5QCPB"
+  apiKey: "AIzaSyDvHCmY12MPZXQtxgsD9cRgG8hPlP_16Yk",
+  authDomain: "kpicos-4d57f.firebaseapp.com",
+  projectId: "kpicos-4d57f",
+  storageBucket: "kpicos-4d57f.firebasestorage.app",
+  messagingSenderId: "1017372697555",
+  appId: "1:1017372697555:web:b62f32e31dd40c65518526",
+  measurementId: "G-HP6QXHJBGY"
 };
 
 const RESERVATION_STATES = [
@@ -73,7 +67,6 @@ let app;
 let analytics;
 let auth;
 let db;
-let storage;
 
 let currentUser = null;
 let currentAdminProfile = null;
@@ -99,7 +92,6 @@ function initFirebase() {
   analytics = getAnalytics(app);
   auth = getAuth(app);
   db = getFirestore(app);
-  storage = getStorage(app);
 }
 
 function setupAuthListeners() {
@@ -536,10 +528,7 @@ async function createMaterial(event) {
       }
 
       let imagenPrincipalPath = existingMaterial.imagenPrincipalPath || "";
-      if (imageFile) {
-        imagenPrincipalPath = await uploadMaterialImage(editingMaterialId, imageFile);
-        materialImageUrlCache.delete(editingMaterialId);
-      }
+      
 
       await updateMaterial(editingMaterialId, {
         nombre,
@@ -641,15 +630,9 @@ async function updateMaterial(materialId, payload, options = {}) {
   }
 }
 
-async function uploadMaterialImage(materialId, file) {
-  const imagePath = `material/${materialId}/principal.jpg`;
-  const storageRef = ref(storage, imagePath);
-
-  await uploadBytes(storageRef, file, {
-    contentType: file.type || "image/jpeg"
-  });
-
-  return imagePath;
+async function uploadMaterialImage() {
+  // Storage deshabilitado temporalmente
+  return "";
 }
 
 function openMaterialEditModal(material) {
@@ -722,10 +705,7 @@ function openMaterialEditModal(material) {
 
     try {
       let imagenPrincipalPath = material.imagenPrincipalPath || "";
-      if (imageFile) {
-        imagenPrincipalPath = await uploadMaterialImage(material.id, imageFile);
-        materialImageUrlCache.delete(material.id);
-      }
+      
 
       await updateMaterial(material.id, {
         nombre: form.querySelector("#edit-mat-nombre").value.trim(),
