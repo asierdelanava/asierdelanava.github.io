@@ -169,7 +169,22 @@ async function checkAdminAccess(user) {
 
   try {
     const userRef = doc(db, "usuarios", user.uid);
-    const userSnap = await getDoc(userRef);
+    let userSnap = await getDoc(userRef);
+
+    // Si el usuario existe en Firebase Auth pero todavía no tiene documento
+    // en Firestore, se crea automáticamente como usuario normal.
+    // NO se asigna rol admin automáticamente por seguridad.
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        nombre: user.displayName || getNameFromEmail(user.email),
+        email: user.email || "",
+        telefono: "",
+        creadoEn: serverTimestamp(),
+        actualizadoEn: serverTimestamp()
+      });
+
+      userSnap = await getDoc(userRef);
+    }
 
     if (!userSnap.exists() || userSnap.data().rol !== "admin") {
       renderAccessDenied(user);
@@ -193,6 +208,11 @@ async function checkAdminAccess(user) {
     console.error(error);
     renderAccessDenied(user, "No se han podido comprobar los permisos de administrador.");
   }
+}
+
+function getNameFromEmail(email) {
+  if (!email) return "Usuario";
+  return String(email).split("@")[0].replace(/[._-]+/g, " ").trim() || "Usuario";
 }
 
 function renderAccessDenied(user, message = "Tu cuenta no tiene permisos de administración.") {
