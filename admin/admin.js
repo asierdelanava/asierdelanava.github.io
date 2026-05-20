@@ -82,6 +82,7 @@ let materials = [];
 let units = [];
 let reservations = [];
 let materialImageUrlCache = new Map();
+let editingMaterialId = null;
 
 const els = {
   app: document.querySelector("#app"),
@@ -328,8 +329,8 @@ function renderMaterials() {
 
   root.innerHTML = `
     <article class="card">
-      <h2 class="section-title">Añadir material</h2>
-      <p class="section-description">Crea un nuevo elemento del catálogo. Después podrás añadir sus unidades físicas en la pestaña “Unidades”.</p>
+      <h2 class="section-title">${editingMaterialId ? "Editar material" : "Añadir material"}</h2>
+      <p class="section-description">${editingMaterialId ? "Modifica el material seleccionado. El ID del documento no se cambia aunque edites el nombre." : "Crea un nuevo elemento del catálogo. Después podrás añadir sus unidades físicas en la pestaña “Unidades”."}</p>
 
       <form id="material-form" class="form-stack" novalidate>
         <div class="form-grid two">
@@ -384,7 +385,10 @@ function renderMaterials() {
           <span class="help">Se subirá a Storage como material/{id}/principal.jpg.</span>
         </div>
 
-        <button class="btn btn-primary" type="submit">Crear material</button>
+        <div class="btn-row">
+          <button class="btn btn-primary" type="submit">${editingMaterialId ? "Guardar cambios" : "Crear material"}</button>
+          ${editingMaterialId ? `<button id="cancel-material-edit" class="btn btn-secondary" type="button">Cancelar edición</button>` : ""}
+        </div>
       </form>
     </article>
 
@@ -403,6 +407,14 @@ function renderMaterials() {
 
   document.querySelector("#material-form").addEventListener("submit", createMaterial);
   document.querySelector("#refresh-materials").addEventListener("click", loadMaterials);
+
+  const cancelEditBtn = document.querySelector("#cancel-material-edit");
+  if (cancelEditBtn) {
+    cancelEditBtn.addEventListener("click", () => {
+      editingMaterialId = null;
+      renderMaterials();
+    });
+  }
 
   const list = document.querySelector("#materials-list");
 
@@ -435,7 +447,7 @@ function renderMaterials() {
   list.querySelectorAll("[data-action='edit-material']").forEach((button) => {
     button.addEventListener("click", () => {
       const material = materials.find((item) => item.id === button.dataset.id);
-      if (material) openMaterialEditModal(material);
+      if (material) startMaterialEdit(material);
     });
   });
 }
@@ -512,13 +524,50 @@ async function createMaterial(event) {
     return;
   }
 
-  const materialId = slugify(nombre);
-  if (!materialId) {
-    showToast("No se ha podido generar un ID válido para el material.", "error");
-    return;
-  }
-
   try {
+    // Modo edición: se mantiene el ID original del documento para no romper unidades/reservas existentes.
+    if (editingMaterialId) {
+      const existingMaterial = materials.find((item) => item.id === editingMaterialId);
+      if (!existingMaterial) {
+        showToast("No se ha encontrado el material que estás editando.", "error");
+        editingMaterialId = null;
+        renderMaterials();
+        return;
+      }
+
+      let imagenPrincipalPath = existingMaterial.imagenPrincipalPath || "";
+      if (imageFile) {
+        imagenPrincipalPath = await uploadMaterialImage(editingMaterialId, imageFile);
+        materialImageUrlCache.delete(editingMaterialId);
+      }
+
+      await updateMaterial(editingMaterialId, {
+        nombre,
+        categoria,
+        descripcion,
+        normasUso,
+        fianza: Number.isFinite(fianza) ? fianza : 0,
+        orden: Number.isFinite(orden) ? orden : 100,
+        visible,
+        activo,
+        imagenPrincipalPath,
+        actualizadoEn: serverTimestamp()
+      }, { reload: false });
+
+      editingMaterialId = null;
+      resetMaterialForm(form);
+      showToast("Material actualizado correctamente.", "success");
+      await loadMaterials();
+      return;
+    }
+
+    // Modo creación: el ID legible se genera solo al crear el material.
+    const materialId = slugify(nombre);
+    if (!materialId) {
+      showToast("No se ha podido generar un ID válido para el material.", "error");
+      return;
+    }
+
     const existingSnap = await getDoc(doc(db, "material", materialId));
     if (existingSnap.exists()) {
       showToast(`Ya existe un material con ID ${materialId}. Cambia el nombre o edita el existente.`, "error");
@@ -543,25 +592,49 @@ async function createMaterial(event) {
       actualizadoEn: serverTimestamp()
     });
 
-    form.reset();
-    form.querySelector("#mat-visible").checked = true;
-    form.querySelector("#mat-activo").checked = true;
-    form.querySelector("#mat-fianza").value = "0";
-    form.querySelector("#mat-orden").value = "100";
-
+    resetMaterialForm(form);
     showToast("Material creado correctamente.", "success");
     await loadMaterials();
   } catch (error) {
     console.error(error);
-    showToast("Error al crear el material.", "error");
+    showToast(editingMaterialId ? "Error al actualizar el material." : "Error al crear el material.", "error");
   }
 }
 
-async function updateMaterial(materialId, payload) {
+function startMaterialEdit(material) {
+  editingMaterialId = material.id;
+  renderMaterials();
+
+  const form = document.querySelector("#material-form");
+  if (!form) return;
+
+  form.querySelector("#mat-nombre").value = material.nombre || "";
+  form.querySelector("#mat-categoria").value = material.categoria || "";
+  form.querySelector("#mat-descripcion").value = material.descripcion || "";
+  form.querySelector("#mat-normas").value = material.normasUso || "";
+  form.querySelector("#mat-fianza").value = String(material.fianza ?? 0);
+  form.querySelector("#mat-orden").value = String(material.orden ?? 100);
+  form.querySelector("#mat-visible").checked = material.visible !== false;
+  form.querySelector("#mat-activo").checked = material.activo !== false;
+  form.querySelector("#mat-imagen").value = "";
+
+  form.scrollIntoView({ behavior: "smooth", block: "start" });
+  showToast(`Editando ${material.nombre || material.id}.`, "success");
+}
+
+function resetMaterialForm(form) {
+  form.reset();
+  form.querySelector("#mat-visible").checked = true;
+  form.querySelector("#mat-activo").checked = true;
+  form.querySelector("#mat-fianza").value = "0";
+  form.querySelector("#mat-orden").value = "100";
+}
+
+async function updateMaterial(materialId, payload, options = {}) {
   try {
     await updateDoc(doc(db, "material", materialId), payload);
-    showToast("Material actualizado.", "success");
-    await loadMaterials();
+    if (options.silent !== true) showToast("Material actualizado.", "success");
+    if (options.reload !== false) await loadMaterials();
   } catch (error) {
     console.error(error);
     showToast("Error al actualizar el material.", "error");
@@ -569,8 +642,7 @@ async function updateMaterial(materialId, payload) {
 }
 
 async function uploadMaterialImage(materialId, file) {
-  const extension = getImageExtension(file);
-  const imagePath = `material/${materialId}/principal.${extension}`;
+  const imagePath = `material/${materialId}/principal.jpg`;
   const storageRef = ref(storage, imagePath);
 
   await uploadBytes(storageRef, file, {
@@ -1566,9 +1638,3 @@ function formatMoney(value) {
   }).format(Number(value || 0));
 }
 
-function getImageExtension(file) {
-  const type = file?.type || "";
-  if (type.includes("png")) return "png";
-  if (type.includes("webp")) return "webp";
-  return "jpg";
-}
