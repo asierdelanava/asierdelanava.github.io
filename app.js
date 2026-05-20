@@ -386,6 +386,9 @@ function renderApp() {
           </div>
 
           <div class="topbar-actions">
+            <a class="btn btn-secondary" href="my-reservations.html">
+              Mis reservas
+            </a>
             <button class="btn btn-secondary" type="button" data-action="open-profile">
               Perfil
             </button>
@@ -635,14 +638,7 @@ async function loadMaterials() {
         reservationsError: ""
       };
 
-      if (material.imagenPrincipalPath) {
-        try {
-          material.imageUrl = await getDownloadURL(ref(storage, material.imagenPrincipalPath));
-        } catch (error) {
-          console.warn(`No se pudo cargar la imagen de ${material.id}`, error);
-          material.imageUrl = null;
-        }
-      }
+      material.imageUrl = loadMaterialImage(material);
 
       try {
         material.availableUnits = await loadMaterialUnitsCount(material.id);
@@ -1080,6 +1076,19 @@ function getFilteredMaterials() {
 
     return searchable.includes(term);
   });
+}
+
+function loadMaterialImage(material) {
+  const rawUrl = String(material.imagenUrl || material.imagenPrincipalPath || "").trim();
+  if (!rawUrl) return null;
+
+  // Sin Firebase Storage por ahora: solo se aceptan URLs absolutas o rutas locales publicadas con la web.
+  // En el futuro, si se activa Storage, aquí se puede sustituir por getDownloadURL(ref(storage, path)).
+  if (/^(https?:)?\/\//i.test(rawUrl) || rawUrl.startsWith("/") || rawUrl.startsWith("./") || rawUrl.startsWith("img/")) {
+    return rawUrl;
+  }
+
+  return null;
 }
 
 function formatDate(value) {
